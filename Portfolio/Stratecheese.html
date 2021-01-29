@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<!--
+	Massively by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+  <title>StRateCheese</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <link rel="stylesheet" href="assets/css/mycss.css" />
+  <noscript>
+    <link rel="stylesheet" href="assets/css/noscript.css" />
+  </noscript>
+</head>
+
+<body class="is-preload">
+  <!-- Wrapper -->
+  <div id="wrapper">
+    <!-- Header -->
+    <header id="header">
+      <a href="#Code" class="logo scrolly" onclick="OpenCodeSample()">Jump straight to code sample!</a>
+    </header>
+
+    <!-- Nav -->
+    <nav id="nav">
+      <ul class="links">
+        <li><a href="index.html">Welcome</a></li>
+        <li><a href="https://drive.google.com/file/d/1TY3mtLUlPdMvy0xrN98iJV4w_Hpepxnf/view?usp=sharing">Download</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main -->
+    <div id="main">
+      <!-- Post -->
+      <section class="post">
+        <header class="major">
+          <h1>Stratecheese</h1>
+          <p>
+            In a filthy frat boy party shack resides two colorful little mice
+            and an angry caged bird. With a crash, the bird is released and
+            begins it's hunt. The two mice must stuff their face with as much
+            cheese as possible before slipping away from the angry predator.
+            Only problem is, these isn't enough cheese for everyone...
+          </p>
+        </header>
+        <div class="image main">
+          <img src="images\Stratecheese.png" alt="" />
+        </div>
+        <button class="collapsible primary button fit large">
+          Game Explanation
+        </button>
+        <div class="content">
+          <h3>Conception</h3>
+          <p>
+            The theme of the 15th Edition of the Creative Jam was Strategy and
+            the technical challenge was diminishing returns. Our goal was to
+            make a more action oriented game which incorporated strategic
+            elements. We also wanted the game to be a multiplayer game. We
+            wanted the players to initially be on equal footing, dealing with
+            a common threat. As they gained points, their habilities would get
+            worse and worse which would increase the difficulty of avoiding
+            the common threat. We also wanted the players to have a variety of
+            options when it came to finding ways to win.
+          </p>
+          <p>
+            The most obvious strategy is to run around, avoiding the bird, and
+            stuffing your face full of cheese as quickly as possible. However,
+            this strategy gets harder the more you eat seeing as your mouse is
+            getting fatter and fatter. When you're fat, you wont be able to
+            run as fast, jump as far, and throw cheese as well as before.
+          </p>
+          <p>
+            A more sneeky strategy is to pick up the cheese without eating it
+            and throw it at your opponent. When the cheese lands it will
+            splatter, which will attract the bird. The bird might then start
+            chasing your opponent and ultimately kill them. Once your opponent
+            is down, the cheese is uncontested and you win.
+          </p>
+          <h3>Implementation Details</h3>
+          <p>
+            The game is a first person split screen couch multiplayer game
+            which was created using the Unity Game Engine and coded in C#. The
+            team was composed of 5 people. Two programmers, a 3D Artist, a 2D
+            Artist and a Sound Designer. I was also Team Lead.
+          </p>
+          <h3>Contributions Details</h3>
+          <h4>
+            This is a list of everything that was done exclusively by me :
+          </h4>
+          <ul>
+            <li>Bird behaviour</li>
+            <li>Audio system</li>
+            <li>UI</li>
+            <li>Gameplay loop</li>
+          </ul>
+          <h3>Controls</h3>
+          <h4>Player 1 and 2 (Gamepad)</h4>
+          <ul>
+            <li>Left analog stick to move.</li>
+            <li>Right analog stick to look around.</li>
+            <li>
+              A button (Xbox) or Cross button (PlayStation) to pick up cheese
+            </li>
+            <li>X button (Xbox) or Square button (PlayStation) to jump</li>
+            <li>
+              While holding cheese
+              <ul>
+                <li>
+                  A button (Xbox) or Cross button (PlayStation) to eat cheese
+                </li>
+                <li>
+                  B button (Xbox) or Circle button (PlayStation) to throw
+                  cheese
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <br />
+        <button class="collapsible primary button fit large">
+          Installation Guide
+        </button>
+        <div class="content">
+          <ol>
+            <li>
+              Click
+              <a href="https://drive.google.com/file/d/1TY3mtLUlPdMvy0xrN98iJV4w_Hpepxnf/view?usp=sharing">here</a>
+              to download game.
+            </li>
+            <li>Unzip folder.</li>
+            <li>Double click on THE GAME.exe file.</li>
+          </ol>
+        </div>
+        <br />
+        <button class="collapsible primary button fit large">
+          Required Hardware
+        </button>
+        <div class="content">
+          <ul>
+            <li>PC with Windows installed.</li>
+            <li>Two game controllers, one for each player.</li>
+          </ul>
+        </div>
+        <br />
+        <button id="Code" class="collapsible primary button fit large">
+          Code Sample
+        </button>
+        <div class="content">
+          <p>
+            What follows is <b>some of the code</b> that was created
+            <b>exclusively by me</b>
+          </p>
+          <pre><code>
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Bird : MonoBehaviour
+{
+    [SerializeField] private float SpeedInterpolationFactor = 0.3f;
+    [SerializeField] private float TurnInterpolationFactor = 0.1f;
+    [SerializeField] private float Speed = 10.0f;
+    [SerializeField] private float MaxSightDistance = 100.0f;
+    [SerializeField] private float SwitchTargetTimer = 5.0f;
+    [SerializeField] private float InvestigationDistance = 20.0f;
+    [SerializeField] private bool HuntPlayers = false;
+    [SerializeField] private GameObject[] Players;
+    [SerializeField] private GameObject Eyes;
+
+    public bool EatingMouse { get; private set; }
+
+    private UtilitaryFunctions utils;
+    private SoundEffectManager sound;
+    private Rigidbody rigidBody;
+    private GameObject holdingCircleTarget;
+    private GameObject huntingTarget;
+    private Vector3 velocity = Vector3.zero;
+    private Vector3 angularVelocity = Vector3.zero;
+    private Vector3 currentLookAtPosition;
+    private Vector3 nextLookAtPosition;
+    private bool isLockedOn = false;
+    private bool canSwitchTargets = true;
+    private bool birdIsDistracted;
+    private bool canRandomlyKaw = true;
+
+    void Start()
+    {
+        rigidBody = GetComponent&lt;Rigidbody&gt;();
+        rigidBody.velocity += transform.forward * Speed;
+
+        holdingCircleTarget = GameObject.FindGameObjectWithTag("Target");
+        huntingTarget = holdingCircleTarget;
+
+        utils = GameObject.FindGameObjectWithTag("UtilitaryFunctions")
+            .GetComponent&lt;UtilitaryFunctions&gt;();
+        sound = GameObject.FindGameObjectWithTag("AudioManager")
+            .GetComponentInChildren&lt;SoundEffectManager&gt;();
+    }
+    void Update()
+    {
+        handleTargetting();
+        handleBirdMovement();
+        randomlyKaw();
+    }
+    ///////////////////////////////////////
+    ///           TARGETTING            ///
+    ///////////////////////////////////////
+    private void handleTargetting()
+    {
+        if (HuntPlayers)
+        {
+            if (isLockedOn && !birdIsDistracted)
+            {
+                if (!canSeeTarget(huntingTarget))
+                {
+                    SetNewTarget(holdingCircleTarget);
+                    isLockedOn = false;
+                }
+            }
+            else if (birdIsDistracted)
+            {
+                isLockedOn = false;
+                if (utils.VectorBetweenTwoGameObjects(gameObject, huntingTarget).magnitude &lt;
+                    InvestigationDistance)
+                {
+                    birdIsDistracted = false;
+                    UnlockTargetSwitch();
+                }
+            }
+            else
+            {
+                if (canSwitchTargets)
+                {
+                    targetPlayers();
+                }
+            }
+        }
+    }
+    private void targetPlayers()
+    {
+        int[] checkPlayerSequence = utils.GetRandomSequence(Players.Length);
+
+        for (int i = 0; i &lt; checkPlayerSequence.Length && !isLockedOn; i++)
+        {
+            if (canSeeTarget(Players[i]))
+            {
+                SetNewTarget(Players[i].gameObject);
+                isLockedOn = true;
+            }
+        }
+
+        if (!isLockedOn)
+        {
+            SetNewTarget(holdingCircleTarget);
+        }
+    }
+    private bool canSeeTarget(GameObject target)
+    {
+        Ray ray = new Ray(Eyes.transform.position, 
+            utils.VectorBetweenTwoGameObjects(Eyes, target)
+            );
+        RaycastHit hit;
+
+        bool result = Physics.Raycast(ray, out hit, MaxSightDistance) &&
+            (hit.collider.tag == target.tag);
+
+        return result;
+    }
+    public void DistractBird(GameObject target)
+    {
+        if (EatingMouse) { return; }
+        if (canSeeTarget(target))
+        {
+            birdIsDistracted = true;
+            SetNewTarget(target, 5);
+            utils.DelayMethod(UnlockDistraction, 5);
+        }
+    }
+    public void UnlockDistraction()
+    {
+        birdIsDistracted = false;
+    }
+    public void SetNewTarget(GameObject target)
+    {
+        SetNewTarget(target, SwitchTargetTimer);
+    }
+    public void SetNewTarget(GameObject target, float delay)
+    {
+        if (target.tag != huntingTarget.tag)
+        {
+            sound.PlayKaw();
+            canSwitchTargets = false;
+            huntingTarget = target;
+            utils.DelayMethod(UnlockTargetSwitch, SwitchTargetTimer);
+        }
+    }
+    private void UnlockTargetSwitch()
+    {
+        canSwitchTargets = true;
+    }
+    public void ForceRoam()
+    {
+        huntingTarget = holdingCircleTarget;
+        HuntPlayers = false;
+    }
+    ///////////////////////////////////////
+    ///             MOVEMENT            ///
+    ///////////////////////////////////////
+    private void handleBirdMovement()
+    {
+        accelerateTowardsTarget();
+        turnTowardsTarget();
+    }
+    private void accelerateTowardsTarget()
+    {
+        Vector3 desiredVelocity = transform.forward * Mathf.Pow(Speed, 2);
+        rigidBody.velocity = Vector3.SmoothDamp(
+            rigidBody.velocity,
+            desiredVelocity,
+            ref velocity,
+            SpeedInterpolationFactor
+            );
+    }
+    private void turnTowardsTarget()
+    {
+        nextLookAtPosition = huntingTarget.transform.position;
+        currentLookAtPosition = Vector3.SmoothDamp(
+            currentLookAtPosition,
+            nextLookAtPosition,
+            ref angularVelocity,
+            TurnInterpolationFactor
+            );
+
+        transform.LookAt(currentLookAtPosition, transform.up);
+    }
+    ///////////////////////////////////////
+    ///              OTHER              ///
+    ///////////////////////////////////////
+    public void EatMouse()
+    {
+        HuntPlayers = false;
+        EatingMouse = true;
+        sound.PlayBirdEating();
+    }
+    private void randomlyKaw()
+    {
+        if (canRandomlyKaw)
+        {
+            canRandomlyKaw = false;
+            sound.PlayKaw();
+            utils.DelayMethod(unlockKaw, 1.0f + utils.GetRandomFloat(3));
+        }
+    }
+    private void unlockKaw()
+    {
+        canRandomlyKaw = true;
+    }
+}
+            </code></pre>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+      <section class="split contact">
+        <section>
+          <h3>Phone</h3>
+          <p>(450) 626-5562</a></p>
+        </section>
+        <section>
+          <h3>Email</h3>
+          <p>pamphilekari@gmail.com</a></p>
+        </section>
+      </section>
+    </footer>
+
+    <!-- Copyright -->
+    <div id="copyright">
+      <ul>
+        <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/myCode.js"></script>
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/jquery.scrollex.min.js"></script>
+  <script src="assets/js/jquery.scrolly.min.js"></script>
+  <script src="assets/js/browser.min.js"></script>
+  <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+
+</html>

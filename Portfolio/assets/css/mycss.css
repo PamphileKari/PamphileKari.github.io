@@ -1,0 +1,11 @@
+.content {
+    padding: 0 18px;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.2s ease-out;
+    background-color: #f1f1f1;
+    border-width: 0px 2px 0px 2px;
+    /* border-right-width: 1px;
+    border-left-width: 1px; */
+    border-style: solid;
+}

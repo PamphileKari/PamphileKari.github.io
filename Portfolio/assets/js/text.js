@@ -1,0 +1,1 @@
+var obama = "Hello World";

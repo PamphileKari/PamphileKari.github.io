@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<!--
+	Massively by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+  <title>Little Bastard</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <link rel="stylesheet" href="assets/css/mycss.css" />
+  <noscript>
+    <link rel="stylesheet" href="assets/css/noscript.css" />
+  </noscript>
+</head>
+
+<body class="is-preload">
+  <!-- Wrapper -->
+  <div id="wrapper">
+    <!-- Header -->
+    <header id="header">
+      <a href="#Code" class="logo scrolly" onclick="OpenCodeSample()">Jump straight to code sample!</a>
+    </header>
+
+    <!-- Nav -->
+    <nav id="nav">
+      <ul class="links">
+        <li><a href="index.html">Welcome</a></li>
+        <li><a href="https://drive.google.com/file/d/1F9HVTxc5A3MPCHErVa1JTjEDuA4l4RhU/view?usp=sharing">Download</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main -->
+    <div id="main">
+      <!-- Post -->
+      <section class="post">
+        <header class="major">
+          <h1>Little Bastard</h1>
+          <p>
+            You are James Dean riding wild on the highway to Las Vegas. As the
+            sun sets, your car, the Little Bastard, takes on a life of it's
+            own. You find yourself on the ride of your life fighting for
+            control as the Little Bastard roars to life and tries to take you
+            down. This game won the prize for <b>Judges Favorite</b>.
+          </p>
+        </header>
+        <div class="image main">
+          <img src="images\LittleBastard.png" alt="" />
+        </div>
+        <button class="collapsible primary button fit large">
+          Game Explanation
+        </button>
+        <div class="content">
+          <h3>Conception</h3>
+          <p>
+            The theme of the McGame Jam 2019 was Urban Legends. My team
+            decided we wanted to make a game about James Dean and his haunted
+            car which was called The Little Bastard. We wanted the game to be
+            a multiplayer game. Player 1 would be James Dean trying to drive
+            his car to Las Vegas, and Player 2 would be the ghost inhabiting
+            the Little Bastard trying to cause a car crash.
+          </p>
+          <h3>Implementation Details</h3>
+          <p>
+            The game is a 3D third person multiplayer driving game which was
+            created using the Unity Game Engine and coded in C#. The team was
+            composed of 4 people. A Game Designer/Team Lead, two Programmers
+            and a 3D Artist. I was lead Programmer.
+          </p>
+          <h3>Contributions Details</h3>
+          <h4>
+            This is a list of everything that was done exclusively by me :
+          </h4>
+          <ul>
+            <li>Traffic generation</li>
+            <li>Ghost powers</li>
+            <li>UI</li>
+            <li>Gameplay loop</li>
+          </ul>
+          <h3>Controls</h3>
+          <h4>Player 1 (Gamepad)</h4>
+          <ul>
+            <li>Left analog stick to steer the car.</li>
+            <li>Right trigger to accelerate.</li>
+            <li>Left trigger to brake/reverse.</li>
+            <li>
+              X button (Xbox) or Square button (PlayStation) to handbrake.
+            </li>
+            <li>
+              Y button (Xbox) or Triangle button (PlayStation) to turn on
+              headlights.
+            </li>
+          </ul>
+          <h4>Player 2 (Keyboard)</h4>
+          <ul>
+            <li>Number keys 1-5 to activate different ghost powers.</li>
+          </ul>
+        </div>
+        <br />
+        <button class="collapsible primary button fit large">
+          Installation Guide
+        </button>
+        <div class="content">
+          <ol>
+            <li>
+              Click
+              <a href="https://drive.google.com/file/d/1F9HVTxc5A3MPCHErVa1JTjEDuA4l4RhU/view?usp=sharing">here</a>
+              to download game.
+            </li>
+            <li>Unzip folder.</li>
+            <li>Double click on Little Bastard.exe file.</li>
+          </ol>
+        </div>
+        <br />
+        <button class="collapsible primary button fit large">
+          Required Hardware
+        </button>
+        <div class="content">
+          <ul>
+            <li>PC with Windows installed.</li>
+            <li>A game controller for Player 1.</li>
+            <li>A keyboard for Player 2.</li>
+          </ul>
+        </div>
+        <br />
+        <button id="Code" class="collapsible primary button fit large">
+          Code Sample
+        </button>
+        <div class="content">
+          <p>
+            What follows is <b>some of the code</b> that was created <b>exclusively by me</b>
+          </p>
+          <pre><code>
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+static class TMConsts
+{
+    // Constants that are identical to the name of GameObjects in the Unity Engine
+    public const string SpawnPoints = "CarSpawnPoints";
+    public const string LookAtPoints = "CarLookAtPoints";
+    public const string OnComing = "OnComing";
+    public const string OnGoing = "OnGoing";
+    public const string OnGoingFront = "OnGoingFront";
+    public const string OnGoingBack = "OnGoingBack";
+    public const string Lane = "Lane";
+
+    //Constants used internally within the Traffic Manager
+    public const string OnComingSP = "OnComingSpawnPoints";
+    public const string OnGoingSPF = "OnGoingSpawnPointsFront";
+    public const string OnGoingSPB = "OnGoingSpawnPointsBack";
+
+    public const string OnComingLAP = "OnComingLookAtPoints";
+    public const string OnGoingLAP = "OnGoingLookAtPoints";
+}
+
+public class TrafficManager : SceneActor
+{
+    public GameObject[] CarPrefabs;
+    public int length = 100;
+
+    private IDictionary&lt;string, Transform> allTransforms;
+    private Transform[] spawnPoints = new Transform[9];
+    private Transform[] lookAtPoints = new Transform[9];
+    private BoxCollider boundaries;
+    private bool sequencerLaunched;
+    private bool canSpawnCars;
+    private SpawningSequenceManager sequencer;
+
+
+
+    protected override void Start()
+    {
+        base.Start();
+
+        GetTransformsFromGameObjects();
+        FillTransformArrays();
+        ApplyLength();
+
+        sequencerLaunched = false;
+        canSpawnCars = true;
+        sequencer = GameObject.FindGameObjectWithTag("SpawningSequenceManager")
+            .GetComponent&lt;SpawningSequenceManager>();
+    }
+
+    void Update()
+    {
+        if (canSpawnCars && sequencerLaunched)
+        {
+            utils.DelayMethod(UnlockSpawning, sequencer.GetDelay());
+            SpawnCars();
+            sequencer.IncrementIndexes();
+        }
+    }
+
+    private void GetTransformsFromGameObjects()
+    {
+        allTransforms = new Dictionary&lt;string, Transform>();
+
+        AddToAllTransforms(TMConsts.OnComingSP, TMConsts.SpawnPoints, TMConsts.OnComing);
+        AddToAllTransforms(TMConsts.OnGoingSPF, TMConsts.SpawnPoints, TMConsts.OnGoingFront);
+        AddToAllTransforms(TMConsts.OnGoingSPB, TMConsts.SpawnPoints, TMConsts.OnGoingBack);
+
+        AddToAllTransforms(TMConsts.OnComingLAP, TMConsts.LookAtPoints, TMConsts.OnComing);
+        AddToAllTransforms(TMConsts.OnGoingLAP, TMConsts.LookAtPoints, TMConsts.OnGoing);
+    }
+
+    private void AddToAllTransforms(string key, string pointType, string direction)
+    {
+        allTransforms.Add(key, transform.Find(pointType).transform.Find(direction).transform);
+    }
+
+    private void FillTransformArrays()
+    {
+        Transform OnComingSpawnPoints;
+        allTransforms.TryGetValue(TMConsts.OnComingSP, out OnComingSpawnPoints);
+        Transform OnGoingSpawnPointsBack;
+        allTransforms.TryGetValue(TMConsts.OnGoingSPF, out OnGoingSpawnPointsBack);
+        Transform OnGoingSpawnPointsFront;
+        allTransforms.TryGetValue(TMConsts.OnGoingSPB, out OnGoingSpawnPointsFront);
+
+        int numberOfLanes = OnComingSpawnPoints.childCount;
+
+        print(numberOfLanes);
+
+        for (int i = 0; i &lt; 3; i++)
+        {
+            spawnPoints[i] = OnComingSpawnPoints.gameObject.transform
+                .Find(TMConsts.Lane + i).gameObject.transform;
+        }
+
+        for (int i = 0; i &lt; 3; i++)
+        {
+            spawnPoints[i + 3] = OnGoingSpawnPointsBack.gameObject.transform
+                .Find(TMConsts.Lane + i).gameObject.transform;
+        }
+
+        for (int i = 0; i &lt; 3; i++)
+        {
+            spawnPoints[i + 6] = OnGoingSpawnPointsFront.gameObject.transform
+                .Find(TMConsts.Lane + i).gameObject.transform;
+        }
+
+        Transform OnComingLookAtPoints;
+        allTransforms.TryGetValue(TMConsts.OnComingLAP, out OnComingLookAtPoints);
+        Transform OnGoingLookAtPoints;
+        allTransforms.TryGetValue(TMConsts.OnGoingLAP, out OnGoingLookAtPoints);
+
+        for (int i = 0; i &lt; 3; i++)
+        {
+            lookAtPoints[i] = OnComingLookAtPoints.gameObject.transform
+                .Find(TMConsts.Lane + i).gameObject.transform;
+        }
+
+        for (int i = 0; i &lt; 6; i++)
+        {
+            lookAtPoints[i + 3] = OnGoingLookAtPoints.gameObject.transform
+                .Find(TMConsts.Lane + i % 3).gameObject.transform;
+        }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.tag == "AICar")
+        {
+            Destroy(other.gameObject);
+        }
+    }
+
+    private void ApplyLength()
+    {
+        boundaries = GetComponent&lt;BoxCollider>();
+        boundaries.size = new Vector3(boundaries.size.x, boundaries.size.y, length * 2);
+
+        ApplyOffsetToTransform(TMConsts.OnComingSP, length - 10);
+        ApplyOffsetToTransform(TMConsts.OnGoingSPF, length - 10);
+        ApplyOffsetToTransform(TMConsts.OnGoingSPB, -(length - 10));
+
+        ApplyOffsetToTransform(TMConsts.OnComingLAP, -(length + 10));
+        ApplyOffsetToTransform(TMConsts.OnGoingLAP, length + 10);
+    }
+
+    private void ApplyOffsetToTransform(string key, int offset)
+    {
+        Transform tran;
+        allTransforms.TryGetValue(key, out tran);
+        tran.transform.localPosition = new Vector3(
+            tran.transform.localPosition.x,
+            tran.transform.localPosition.y,
+            offset
+            );
+    }
+
+    private void SpawnCars()
+    {
+        canSpawnCars = false;
+
+        float[] SpawnSpeedMultipliers = sequencer.GetSpawn();
+
+        for (int i = 0; i &lt; 9; i++)
+        {
+            if (SpawnSpeedMultipliers[i] != -1)
+            {
+
+                GameObject Car = Instantiate(
+                    CarPrefabs[utils.GetRandomInteger(CarPrefabs.Length)],
+                    spawnPoints[i].position,
+                    spawnPoints[i].rotation,
+                    transform
+                    );
+                Car.gameObject.transform.parent = null;
+                DummyCarAI Ai = Car.gameObject.GetComponent&lt;DummyCarAI>();
+                Ai.SetSpeedMultiplier(SpawnSpeedMultipliers[i]);
+                Ai.SetLookAtPoint(lookAtPoints[i]);
+            }
+        }
+    }
+
+    private void UnlockSpawning()
+    {
+        canSpawnCars = true;
+    }
+
+    public void UnlockSequencer()
+    {
+        sequencerLaunched = true;
+    }
+
+    public void LockSequencer()
+    {
+        sequencerLaunched = false;
+    }
+}
+              </code></pre>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+      <section class="split contact">
+        <section>
+          <h3>Phone</h3>
+          <p>(450) 626-5562</a></p>
+        </section>
+        <section>
+          <h3>Email</h3>
+          <p>pamphilekari@gmail.com</a></p>
+        </section>
+      </section>
+    </footer>
+
+    <!-- Copyright -->
+    <div id="copyright">
+      <ul>
+        <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/myCode.js"></script>
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/jquery.scrollex.min.js"></script>
+  <script src="assets/js/jquery.scrolly.min.js"></script>
+  <script src="assets/js/browser.min.js"></script>
+  <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+
+</html>

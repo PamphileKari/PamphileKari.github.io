@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<!--
+	Massively by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+
+<head>
+  <title>Poltergeist</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <link rel="stylesheet" href="assets/css/mycss.css" />
+  <noscript>
+    <link rel="stylesheet" href="assets/css/noscript.css" />
+  </noscript>
+</head>
+
+<body class="is-preload">
+  <!-- Wrapper -->
+  <div id="wrapper">
+    <!-- Header -->
+    <header id="header">
+      <a href="#Code" class="logo scrolly" onclick="OpenCodeSample()">Jump straight to code sample!</a>
+    </header>
+
+    <!-- Nav -->
+    <nav id="nav">
+      <ul class="links">
+        <li><a href="index.html">Welcome</a></li>
+        <li><a
+            href="https://cerbintalyalas.itch.io/poltergeist?fbclid=IwAR3BQssfaFgmaE_iq1U2XGpmD8af_IXKKhlRlGosoP092odMyrO0YWfctdk">Download</a>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Main -->
+    <div id="main">
+      <!-- Post -->
+      <section class="post">
+        <header class="major">
+          <h1>Poltergeist</h1>
+          <p>
+            Upon returning home from the yearly Witch Convention, Melene, and her
+            friendly ghostly familiar Ytia, discover their home destroyed.
+            The King of La Valoisie has chopped down her forest. The motivations
+            for such an act is unknown but one thing is certain. The forest will be avenged.
+          </p>
+        </header>
+        <div class="image main">
+          <img src="images\Poltergeist.png" alt="" />
+        </div>
+        <button class="collapsible primary button fit large">
+          Game Explanation
+        </button>
+        <div class="content">
+          <h3>Conception</h3>
+          <p>
+            In the course Conception de Jeux Videos we had a series of 3 TPs (Travaux Pratiques).
+            <a href="https://drive.google.com/file/d/1tUhVroS3VvOXUbiCpyXWnXplKeWLFssQ/view?usp=sharing">The first
+              TP</a>
+            was to write a 10 page Game Design Document (GDD) about a game we would like to create.
+            <a href="https://drive.google.com/file/d/1ix6FVQ9W7Zd0pnjuivq5Yq42N-pD0USq/view?usp=sharing">The second
+              TP</a>
+            was to implement 10 Game Mecanics that would exist in our game.
+            <a href="https://drive.google.com/file/d/1hz691SH3F3_rtZzCWF6147dZVYfieqiC/view?usp=sharing">The third
+              TP</a>
+            was to make a level which utilised all the game mecanics we had previously implemented.
+          </p>
+          <h3>Implementation Details</h3>
+          <p>
+            The game is a single player 2.5D action platformer which was created using the
+            Unity Game Engine and coded in C#. The team was composed of 4 people,
+            all programmers. I was the most experienced with the Unity Game Engine
+            and implemented a lot of the most complicated game mecanics.
+          </p>
+          <h3>Contributions Details</h3>
+          <h4>
+            This is a list of everything that was done exclusively by me :
+          </h4>
+          <ul>
+            <li>All the traps</li>
+            <li>All the scene objects (rocks, arrows, lava, explosive barrels)</li>
+            <li>The Hourglass form (Slowing down/speeding up time for scene objects)</li>
+            <li>The explosive barrels and destructible terrain</li>
+            <li>All the level design</li>
+          </ul>
+          <h3>Controls</h3>
+          <h4>Player 1 (Mouse and Keyboard)</h4>
+          <ul>
+            <li>WASD keys to move</li>
+            <li>Space bar to jump</li>
+            <li>1, 2, 3, 4, 5 keys to change Ytia's forms</li>
+            <li>Mouse move to move Ytia</li>
+            <li>Left mouse click to activate Ytia's power</li>
+          </ul>
+        </div>
+        <br />
+        <button class="collapsible primary button fit large">
+          Installation Guide
+        </button>
+        <div class="content">
+          <ol>
+            <li>
+              Click
+              <a
+                href="https://cerbintalyalas.itch.io/poltergeist?fbclid=IwAR3klOIiEoCvAwI1G9DAMmSf_HS6cyXcbbZiSkMPSTEfss5MA1B7RSAQtN4">here</a>
+              to download game.
+            </li>
+            <li>Click Download.</li>
+            <li>Unzip folder.</li>
+            <li>Double click on Poltergeist.exe file.</li>
+          </ol>
+        </div>
+        <br />
+        <button class="collapsible primary button fit large">
+          Required Hardware
+        </button>
+        <div class="content">
+          <ul>
+            <li>PC with Windows installed.</li>
+            <li>A keyboard.</li>
+            <li>A mouse.</li>
+          </ul>
+        </div>
+        <br />
+        <button id="Code" class="collapsible primary button fit large">
+          Code Sample
+        </button>
+        <div class="content">
+          <p>
+            What follows is <b>some of the code</b> that was created <b>exclusively by me</b>
+          </p>
+          <pre><code>
+using UnityEngine;
+
+public class ObjectManager : MonoBehaviour
+{
+    public static ObjectManager Manager { get; private set; }
+    public enum ObjectType
+    {
+        Arrow, BigRock, SmallRock, LavaDrop, Flame, ExplodingBarrel
+    }
+
+    [SerializeField] private GameObject[] Prefabs;
+    [SerializeField] private int[] NumberOfObjects;
+
+    private GameObject[][] ObjectMatrix;
+    private int[] Indexes;
+    private void Awake()
+    {
+        MakeSingleton();
+
+        ObjectMatrix = new GameObject[Prefabs.Length][];
+        Indexes = new int[Prefabs.Length];
+
+
+        for (int i = 0; i &lt; ObjectMatrix.Length; i++)
+        {
+            ObjectMatrix[i] = new GameObject[NumberOfObjects[i]];
+            Indexes[i] = 0;
+            GameObject child = new GameObject(((ObjectType)i).ToString() + "s");
+            child.transform.parent = gameObject.transform;
+        }
+    }
+    private void MakeSingleton()
+    {
+        if (Manager == null)
+        {
+            Manager = this;
+        }
+        else
+        {
+            Destroy(this);
+            return;
+        }
+    }
+    public GameObject Spawn(GameObject prefab, Transform trans, Transform parent = null)
+    {
+        ObjectType type = prefab.GetComponent&lt;SceneObject>().GetObjectType();
+
+        if (ObjectMatrix[(int)type].Length &lt;= Indexes[(int)type])
+        {
+            Debug.LogError("The number of SceneObjects of type "
+                + type + " has not been set properly in the ObjectManager");
+            return null;
+        }
+
+        if (ObjectMatrix[(int)type][Indexes[(int)type]] == null)
+        {
+            ObjectMatrix[(int)type][Indexes[(int)type]] = Instantiate(
+                Prefabs[(int)type],
+                trans.position,
+                trans.rotation,
+                parent ?? transform.GetChild((int)type)
+                );
+        }
+        else
+        {
+            int count = 0;
+            while (!ObjectMatrix[(int)type][Indexes[(int)type]]
+                .GetComponent&lt;SceneObject>().GetCanBeDespawned() &&
+                count &lt; ObjectMatrix[(int)type].Length)
+            {
+                Indexes[(int)type] = (Indexes[(int)type] + 1) % ObjectMatrix[(int)type].Length;
+                count++;
+            }
+
+            ObjectMatrix[(int)type][Indexes[(int)type]].SetActive(false);
+            ObjectMatrix[(int)type][Indexes[(int)type]].transform.position = trans.position;
+            ObjectMatrix[(int)type][Indexes[(int)type]].transform.rotation = trans.rotation;
+            ObjectMatrix[(int)type][Indexes[(int)type]].transform.parent = parent ??
+                transform.GetChild((int)type);
+            ObjectMatrix[(int)type][Indexes[(int)type]].SetActive(true);
+        }
+
+        GameObject toBeReturned = ObjectMatrix[(int)type][Indexes[(int)type]];
+
+        Indexes[(int)type] = (Indexes[(int)type] + 1) % ObjectMatrix[(int)type].Length;
+
+        return toBeReturned;
+    }
+    public void TakeChildren(Transform oldParent)
+    {
+        if (oldParent.childCount > 0)
+        {
+            while (oldParent.childCount != 0)
+            {
+                TakeChild(oldParent.GetChild(0));
+            }
+        }
+    }
+    private void TakeChild(Transform child)
+    {
+        SceneObject sceneObject = child.GetComponent&lt;SceneObject>();
+        sceneObject.SetCanBeDespawned(true);
+        ObjectType type = sceneObject.GetObjectType();
+        child.parent = transform.GetChild((int)type);
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        SceneObject sceneObject;
+        if (other.gameObject.TryGetComponent(out sceneObject))
+        {
+            sceneObject.SetCanBeDespawned(true);
+            sceneObject.gameObject.SetActive(false);
+        }
+    }
+}
+        </code></pre>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <footer id="footer">
+      <section class="split contact">
+        <section>
+          <h3>Phone</h3>
+          <p>(450) 626-5562</a></p>
+        </section>
+        <section>
+          <h3>Email</h3>
+          <p>pamphilekari@gmail.com</a></p>
+        </section>
+      </section>
+    </footer>
+
+    <!-- Copyright -->
+    <div id="copyright">
+      <ul>
+        <li>Design: <a href="https://html5up.net">HTML5 UP</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="assets/js/myCode.js"></script>
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/jquery.scrollex.min.js"></script>
+  <script src="assets/js/jquery.scrolly.min.js"></script>
+  <script src="assets/js/browser.min.js"></script>
+  <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
+</body>
+
+</html>
